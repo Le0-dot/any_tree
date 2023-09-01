@@ -14,6 +14,9 @@ private:
     Payload _payload{};
 
 public:
+    template<typename... Args>
+    node_payload(Args&&... args) : _payload{std::forward<Args>(args)...} {}
+
     [[nodiscard]] const Payload& payload() const noexcept { return _payload; }
     [[nodiscard]]       Payload& payload()       noexcept { return _payload; }
 };
