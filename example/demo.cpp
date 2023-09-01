@@ -23,11 +23,11 @@ using child3_node = leaf<void>; // node with no children and no payload, i.e. cl
 int main() {
     std::any n{root_node()}; // root node of the tree
 
-    std::any_cast<root_node&>(n).children().emplace_back(child1_node()); // access vector and push back some elements
-    std::any_cast<root_node&>(n).children().emplace_back(child2_node());
+    std::any_cast<root_node&>(n).children().emplace_back(child1_node(1, 2)); // access vector and push back some elements
+    std::any_cast<root_node&>(n).children().emplace_back(child2_node(1)); // pass 1 to constructor of data
     std::any_cast<root_node&>(n).children().emplace_back(child3_node());
 
-    std::cout << std::any_cast<child1_node&>(std::any_cast<root_node>(n).children().front()).children_size() << '\n'; // make sure that everything is alright
+    std::cout << std::any_cast<child1_node&>(std::any_cast<root_node&>(n).children().front()).children_size() << '\n'; // make sure that everything is alright
 
     // const visitors that return void
     const_children_visitor<void> cv {
@@ -47,7 +47,7 @@ int main() {
     // visitors that return int
     children_visitor<int> v {
 	make_child_visitor<root_node>([] (root_node&) { std::cout << "root_node&\n"; return 1; }),
-	make_child_visitor<child1_node>([] (child1_node&) { std::cout << "child1_node&\n"; return 2; }),
+	make_child_visitor<child1_node>([] (child1_node& n) { std::cout << "child1_node&\n"; return 2; }),
 	make_child_visitor<child2_node>([] (child2_node&) { std::cout << "child2_node&\n"; return 3; }),
 	make_child_visitor<child3_node>([] (child3_node&) { std::cout << "child3_node&\n"; return 3; }),
     };
