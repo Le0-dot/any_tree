@@ -46,7 +46,7 @@ using child_visitor_t = typename child_visitor<F, T>::type;
 
 
 template<typename T>
-auto const_visit_node(const const_children_visitor<T>& visitor, const std::any& node) -> T {
+auto visit_node(const const_children_visitor<T>& visitor, const std::any& node) -> T {
     const auto type = std::type_index(node.type());
     const auto func = visitor.at(type);
     return std::invoke(func, node);
