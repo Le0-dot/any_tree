@@ -10,7 +10,7 @@
 
 namespace any_tree {
 
-template<typename Payload, typename ChildrenContainer>
+template<typename Payload, typename ChildrenContainer, std::size_t ID = 0>
 requires any_range<ChildrenContainer> || std::is_void_v<ChildrenContainer>
 class node : public impl::node_payload<Payload>, public impl::node_children<ChildrenContainer> {
 public:
@@ -18,22 +18,22 @@ public:
     node(Args&&... args) : impl::node_payload<Payload>{std::forward<Args>(args)...} {}
 };
 
-template<typename Payload, typename ChildrenContainer>
+template<typename Payload, typename ChildrenContainer, std::size_t ID>
 requires any_range<ChildrenContainer> && std::ranges::random_access_range<ChildrenContainer>
-class node<Payload, ChildrenContainer> : public impl::node_payload<Payload>, public impl::node_random_access<ChildrenContainer> {
+class node<Payload, ChildrenContainer, ID> : public impl::node_payload<Payload>, public impl::node_random_access<ChildrenContainer> {
 public:
     template<typename... Args>
     node(Args&&... args) : impl::node_payload<Payload>{std::forward<Args>(args)...} {}
 };
 
 
-template<typename Paylaod, std::size_t N>
-using static_node = node<Paylaod, std::array<std::any, N>>;
+template<typename Paylaod, std::size_t N, std::size_t ID = 0>
+using static_node = node<Paylaod, std::array<std::any, N>, ID>;
 
-template<typename Payload>
-using dynamic_node = node<Payload, std::vector<std::any>>;
+template<typename Payload, std::size_t ID = 0>
+using dynamic_node = node<Payload, std::vector<std::any>, ID>;
 
-template<typename Payload>
-using leaf = node<Payload, void>;
+template<typename Payload, std::size_t ID = 0>
+using leaf = node<Payload, void, ID>;
 
 }
