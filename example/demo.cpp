@@ -31,17 +31,21 @@ int main() {
 
     // const visitors that return void
     const_children_visitor<void> cv {
-	make_const_child_visitor<root_node>([&cv] (const root_node& n) { std::cout << "const dynamic_node<void>&\n"; 
-		n.for_each_child(std::bind_front(const_visit_node<void>, cv)); }),
-	make_const_child_visitor<child1_node>([&cv] (const child1_node& n) { std::cout << "const static_node<data, 2>&\n"; 
-		n.for_each_child(std::bind_front(const_visit_node<void>, cv)); }),
+	make_const_child_visitor<root_node>([&cv] (const root_node& n) {
+		std::cout << "const dynamic_node<void>&\n"; 
+		n.for_each_child([&cv] (const std::any& n) { visit_node<void>(cv, n); });
+	}),
+	make_const_child_visitor<child1_node>([&cv] (const child1_node& n) { 
+	    std::cout << "const static_node<data, 2>&\n"; 
+	    n.for_each_child([&cv] (const std::any& n) { visit_node<void>(cv, n); });
+	}),
 	make_const_child_visitor<child2_node>([&cv] (const child2_node&) { std::cout << "const leaf<data>&\n"; }),
 	make_const_child_visitor<child3_node>([&cv] (const child3_node&) { std::cout << "const leaf<void>&\n"; }),
 	make_const_child_visitor<void>([] () { std::cout << "empty node\n"; }),
     };
 
     // apply const visitors
-    const_visit_node(cv, n);
+    visit_node(cv, n);
 
 
     // visitors that return int
@@ -76,7 +80,7 @@ int main() {
     }
 
     // apply const visitors again to see changes
-    const_visit_node(cv, n);
+    visit_node(cv, n);
 
     return 0;
 }
